@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeritasAI - Fake News Detection & NLP Analysis Platform</title>
+    <meta name="description" content="AI-powered Fake News Detection system built with Scikit-learn, NLP, and TF-IDF feature analysis. Real-time verification, clickbait detection, and model explainability.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Veritas<span class="highlight">AI</span></h1>
+                    <span class="sub-brand">Fake News & NLP Intelligence</span>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <div class="status-badge" id="apiStatusBadge">
+                    <span class="pulse-dot"></span>
+                    <span id="statusText">Model Ready</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnModelInfo">
+                    <i class="fa-solid fa-chart-diagram"></i> Model Specs
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Hero Title Banner -->
+        <section class="hero-section">
+            <div class="hero-badge">
+                <i class="fa-solid fa-brain"></i> Machine Learning & Natural Language Processing
+            </div>
+            <h2>Verify News Authenticity with Explainable AI</h2>
+            <p>Paste any news headline or full article text to analyze whether it is likely <strong>Real</strong> or <strong>Fake</strong>. Powered by TF-IDF N-Gram Vectorization, Scikit-Learn classification, and linguistic NLP analysis.</p>
+        </section>
+
+        <!-- Sample Article Bar -->
+        <section class="samples-bar">
+            <span class="samples-label"><i class="fa-solid fa-bolt"></i> Quick Test Samples:</span>
+            <div class="sample-chips" id="sampleChipsContainer">
+                <div class="sample-chip loading-skeleton">Loading samples...</div>
+            </div>
+        </section>
+
+        <div class="workspace-grid">
+            <!-- Left Column: Article Input Form -->
+            <div class="card glass-card input-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-newspaper"></i>
+                        <h3>Article Input</h3>
+                    </div>
+                    <button class="btn-icon" id="btnClear" title="Clear input fields">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+
+                <form id="analyzeForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="articleTitle">Article Headline / Title <span class="optional">(Optional)</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-heading input-icon"></i>
+                            <input type="text" id="articleTitle" placeholder="e.g., NASA Webb Space Telescope Discovers Ancient Galaxy..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-with-counter">
+                            <label for="articleText">Full Article Body <span class="required">*</span></label>
+                            <span class="counter" id="textCounter">0 words | 0 chars</span>
+                        </div>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="articleText" rows="10" placeholder="Paste full news article text here for analysis..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block" id="btnAnalyze">
+                            <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Authenticity</span>
+                            <span class="spinner" id="analyzeSpinner" style="display: none;"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Results Dashboard -->
+            <div class="card glass-card results-card" id="resultsCard">
+                <!-- Idle Ready State -->
+                <div class="results-placeholder" id="resultsPlaceholder">
+                    <div class="placeholder-icon">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    </div>
+                    <h3>Awaiting Article Input</h3>
+                    <p>Enter an article on the left or select a sample above to view real-time predictions, confidence scores, and NLP feature metrics.</p>
+                </div>
+
+                <!-- Active Results Content (Hidden by default) -->
+                <div class="results-content" id="resultsContent" style="display: none;">
+                    <!-- Result Status Banner -->
+                    <div class="result-banner" id="resultBanner">
+                        <div class="banner-left">
+                            <div class="verdict-icon" id="verdictIcon">
+                                <i class="fa-solid fa-shield-check"></i>
+                            </div>
+                            <div class="verdict-text">
+                                <span class="verdict-tag" id="verdictTag">LIKELY REAL NEWS</span>
+                                <h4 class="verdict-title" id="verdictTitle">Article Appears Genuine</h4>
+                            </div>
+                        </div>
+                        <div class="confidence-circle-wrap">
+                            <div class="confidence-value" id="confidenceValue">94.8%</div>
+                            <div class="confidence-label">Confidence</div>
+                        </div>
+                    </div>
+
+                    <!-- Probability Dual Bar -->
+                    <div class="prob-section">
+                        <div class="prob-labels">
+                            <span class="prob-real-label"><i class="fa-solid fa-circle-check"></i> Real Probability: <strong id="probRealText">94.8%</strong></span>
+                            <span class="prob-fake-label"><i class="fa-solid fa-triangle-exclamation"></i> Fake Probability: <strong id="probFakeText">5.2%</strong></span>
+                        </div>
+                        <div class="prob-bar-container">
+                            <div class="prob-bar-real" id="probBarReal" style="width: 94.8%;"></div>
+                            <div class="prob-bar-fake" id="probBarFake" style="width: 5.2%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs: Feature Explainability / Highlighted Text -->
+                    <div class="results-tabs">
+                        <button class="tab-btn active" id="tabExplain">
+                            <i class="fa-solid fa-key"></i> Key Feature Influencers
+                        </button>
+                        <button class="tab-btn" id="tabHighlight">
+                            <i class="fa-solid fa-highlighter"></i> Text Highlighter
+                        </button>
+                        <button class="tab-btn" id="tabNLP">
+                            <i class="fa-solid fa-chart-pie"></i> NLP Breakdown
+                        </button>
+                    </div>
+
+                    <!-- Tab Panel 1: Key Influencer Features -->
+                    <div class="tab-panel active" id="panelExplain">
+                        <p class="panel-desc">Words and phrases from the article that contributed most strongly to the classification:</p>
+                        
+                        <div class="influencers-grid">
+                            <div class="influencers-box fake-box">
+                                <h5><i class="fa-solid fa-triangle-exclamation"></i> Fake News Indicators</h5>
+                                <div class="tags-container" id="fakeTagsContainer">
+                                    <span class="no-tags">No strong fake indicators found.</span>
+                                </div>
+                            </div>
+                            <div class="influencers-box real-box">
+                                <h5><i class="fa-solid fa-circle-check"></i> Real News Indicators</h5>
+                                <div class="tags-container" id="realTagsContainer">
+                                    <span class="no-tags">No strong real indicators found.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel 2: Highlighted Text -->
+                    <div class="tab-panel" id="panelHighlight" style="display: none;">
+                        <p class="panel-desc">Article text with sensationalist or high-risk clickbait terms highlighted:</p>
+                        <div class="highlighted-text-box" id="highlightedTextBox">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel 3: NLP Linguistic Metrics -->
+                    <div class="tab-panel" id="panelNLP" style="display: none;">
+                        <div class="nlp-metrics-grid">
+                            <div class="nlp-card">
+                                <div class="nlp-card-header">
+                                    <span class="nlp-card-title">Sensationalism Index</span>
+                                    <i class="fa-solid fa-fire nlp-card-icon text-amber"></i>
+                                </div>
+                                <div class="nlp-card-value" id="sensationalScore">15%</div>
+                                <div class="nlp-progress"><div class="nlp-progress-bar bg-amber" id="sensationalBar" style="width: 15%;"></div></div>
+                                <span class="nlp-subtext" id="sensationalSubtext">Low sensational language</span>
+                            </div>
+
+                            <div class="nlp-card">
+                                <div class="nlp-card-header">
+                                    <span class="nlp-card-title">Clickbait Risk</span>
+                                    <i class="fa-solid fa-bullhorn nlp-card-icon text-rose"></i>
+                                </div>
+                                <div class="nlp-card-value" id="clickbaitScore">10%</div>
+                                <div class="nlp-progress"><div class="nlp-progress-bar bg-rose" id="clickbaitBar" style="width: 10%;"></div></div>
+                                <span class="nlp-subtext" id="clickbaitSubtext">Standard news headline</span>
+                            </div>
+
+                            <div class="nlp-card">
+                                <div class="nlp-card-header">
+                                    <span class="nlp-card-title">Subjectivity Level</span>
+                                    <i class="fa-solid fa-balance-scale nlp-card-icon text-indigo"></i>
+                                </div>
+                                <div class="nlp-card-value" id="subjectivityScore">35%</div>
+                                <div class="nlp-progress"><div class="nlp-progress-bar bg-indigo" id="subjectivityBar" style="width: 35%;"></div></div>
+                                <span class="nlp-subtext" id="subjectivitySubtext">Mostly objective reporting</span>
+                            </div>
+
+                            <div class="nlp-card">
+                                <div class="nlp-card-header">
+                                    <span class="nlp-card-title">Lexical Diversity</span>
+                                    <i class="fa-solid fa-spell-check nlp-card-icon text-emerald"></i>
+                                </div>
+                                <div class="nlp-card-value" id="lexicalScore">68%</div>
+                                <div class="nlp-progress"><div class="nlp-progress-bar bg-emerald" id="lexicalBar" style="width: 68%;"></div></div>
+                                <span class="nlp-subtext">Unique word ratio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session History Drawer / Grid -->
+        <section class="history-section">
+            <div class="section-header">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Session Analysis History</h3>
+                <button class="btn btn-secondary btn-xs" id="btnClearHistory">Clear History</button>
+            </div>
+            <div class="history-grid" id="historyGrid">
+                <div class="history-empty">No articles analyzed in this session yet.</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Model Specs Modal -->
+    <div class="modal-backdrop" id="modelModal" style="display: none;">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-microchip"></i> Scikit-Learn Model Specification</h3>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="specs-grid">
+                    <div class="spec-box">
+                        <span class="spec-label">Algorithm</span>
+                        <strong class="spec-val" id="specModelType">LogisticRegression + TF-IDF</strong>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-label">Test Accuracy</span>
+                        <strong class="spec-val text-emerald" id="specAccuracy">90.0%</strong>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-label">Precision Score</span>
+                        <strong class="spec-val" id="specPrecision">0.857</strong>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-label">Recall Score</span>
+                        <strong class="spec-val" id="specRecall">1.000</strong>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-label">F1 Score</span>
+                        <strong class="spec-val text-indigo" id="specF1">0.923</strong>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-label">TF-IDF Features</span>
+                        <strong class="spec-val" id="specVocab">8,000 N-Grams</strong>
+                    </div>
+                </div>
+
+                <div class="cm-section">
+                    <h4>Confusion Matrix</h4>
+                    <div class="cm-grid">
+                        <div class="cm-cell cm-tp">
+                            <span class="cm-val" id="cmTP">6</span>
+                            <span class="cm-lbl">True Real</span>
+                        </div>
+                        <div class="cm-cell cm-fn">
+                            <span class="cm-val" id="cmFN">0</span>
+                            <span class="cm-lbl">False Fake</span>
+                        </div>
+                        <div class="cm-cell cm-fp">
+                            <span class="cm-val" id="cmFP">1</span>
+                            <span class="cm-lbl">False Real</span>
+                        </div>
+                        <div class="cm-cell cm-tn">
+                            <span class="cm-val" id="cmTN">3</span>
+                            <span class="cm-lbl">True Fake</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JS App Logic -->
+    <script src="js/main.js"></script>
+</body>
+</html>

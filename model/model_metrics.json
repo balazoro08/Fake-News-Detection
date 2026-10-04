@@ -1,0 +1,20 @@
+{
+    "accuracy": 0.9,
+    "precision": 0.8571,
+    "recall": 1.0,
+    "f1_score": 0.9231,
+    "cv_accuracy": 0.6533,
+    "confusion_matrix": [
+        [
+            3,
+            1
+        ],
+        [
+            0,
+            6
+        ]
+    ],
+    "vocabulary_size": 2766,
+    "total_training_samples": 49,
+    "model_type": "LogisticRegression (TF-IDF Unigrams + Bigrams)"
+}
