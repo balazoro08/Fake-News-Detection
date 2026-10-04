@@ -62,43 +62,7 @@ Fake-News-Detection/
 
 ---
 
-## 🚀 Quick Start Guide
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/balazoro08/Fake-News-Detection.git
-cd Fake-News-Detection
-```
-
-### 2. Set Up Virtual Environment & Install Dependencies
-```bash
-# Create virtual environment (optional but recommended)
-python -m venv venv
-
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-# Install required packages
-pip install -r requirements.txt
-```
-
-### 3. Run Model Training (Optional)
-*Pre-trained model weights are included in `model/`, but you can re-train anytime:*
-```bash
-python model/train_model.py
-```
-
-### 4. Launch the Web Application
-```bash
-python app.py
-```
-Open your web browser and navigate to:
-```
-http://127.0.0.1:5000
-```
 
 ---
 
